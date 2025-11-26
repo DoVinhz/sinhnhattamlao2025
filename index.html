@@ -8,19 +8,20 @@
         margin: 0;
         background: black;
         overflow: hidden;
-        font-family: Arial, sans-serif;
+        font-family: 'Segoe UI', Arial, sans-serif;
         color: white;
         text-align: center;
     }
 
     #countdown {
-        font-size: 120px;
+        font-size: 150px;
         font-weight: bold;
         position: absolute;
         top: 40%;
         left: 50%;
         transform: translate(-50%, -50%);
         display: none;
+        text-shadow: 0 0 30px #ff0, 0 0 60px #f0f;
     }
 
     #birthday-message {
@@ -33,9 +34,10 @@
     }
 
     #birthday-message small {
-        font-size: 35px;
+        font-size: 28px;
         display: block;
-        margin-top: 10px;
+        margin-top: 15px;
+        color: #ffeb3b;
     }
 
     #cake {
@@ -45,17 +47,17 @@
         bottom: 10%;
         left: 50%;
         transform: translateX(-50%);
+        box-shadow: 0 0 30px #ff0;
+        border-radius: 15px;
     }
-
-  
 
     /* Bóng bay */
     .balloon {
         position: absolute;
-        width: 40px;
-        height: 55px;
+        width: 35px;
+        height: 50px;
         border-radius: 60%;
-        opacity: 0.8;
+        opacity: 0.85;
         animation: floatUp 6s linear infinite;
     }
 
@@ -63,31 +65,35 @@
         from { transform: translateY(100vh); }
         to   { transform: translateY(-120vh); }
     }
+
+    canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+    }
 </style>
 </head>
 <body>
 
 <!-- Nhạc nền -->
 <audio id="music" loop>
-    <!-- Chèn file nhạc của bạn -->
-    <!-- <source src="music.mp3" type="audio/mp3"> -->
+    <source src="music.mp3" type="audio/mp3">
 </audio>
 
 <div id="countdown">3</div>
-
 
 <img id="cake" src="https://i.imgur.com/9N4I9Yy.png" alt="Birthday Cake">
 
 <div id="birthday-message">
     Happy Birthday TÂM 🎉  
-    <small>Lạo</small>
-    <small style="font-size:28px; margin-top:15px;">From V. Vinh with love ❤️</small>
+    <small>From V. Vinh with love ❤️</small>
 </div>
 
 <canvas id="fireworks"></canvas>
 
 <script>
-// ==================== Đếm ngược 3-2-1
+// ==================== Countdown
 let countdown = document.getElementById("countdown");
 let count = 3;
 countdown.style.display = "block";
@@ -95,7 +101,6 @@ countdown.style.display = "block";
 let timer = setInterval(() => {
     countdown.innerHTML = count;
     count--;
-
     if (count < 0) {
         clearInterval(timer);
         countdown.style.display = "none";
@@ -103,27 +108,28 @@ let timer = setInterval(() => {
     }
 }, 1000);
 
-// ==================== Bắt đầu trình diễn
+// ==================== Start show
 function startShow() {
-    // Phát nhạc
     document.getElementById("music").play().catch(()=>{});
     document.getElementById("birthday-message").style.display = "block";
     document.getElementById("cake").style.display = "block";
-    document.getElementById("avatar").style.display = "block";
 
     launchFireworks();
     createBalloons();
 }
 
-// ==================== Pháo hoa
+// ==================== Fireworks
 const canvas = document.getElementById('fireworks');
 const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-function random(min, max) {
-    return Math.random() * (max - min) + min;
-}
+window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
+
+function random(min, max) { return Math.random() * (max - min) + min; }
 
 let particles = [];
 
@@ -132,7 +138,7 @@ function launchFireworks() {
         let x = random(100, canvas.width - 100);
         let y = random(50, canvas.height / 2);
 
-        for (let i = 0; i < 60; i++) {
+        for (let i = 0; i < 50; i++) {
             particles.push({
                 x, y,
                 angle: random(0, Math.PI * 2),
@@ -140,7 +146,7 @@ function launchFireworks() {
                 life: 100
             });
         }
-    }, 500);
+    }, 700);
 
     animate();
 }
@@ -166,7 +172,7 @@ function animate() {
     requestAnimationFrame(animate);
 }
 
-// ==================== Bóng bay
+// ==================== Balloons
 function createBalloons() {
     setInterval(() => {
         let balloon = document.createElement("div");
@@ -177,10 +183,9 @@ function createBalloons() {
         document.body.appendChild(balloon);
 
         setTimeout(() => balloon.remove(), 6500);
-    }, 500);
+    }, 600);
 }
 </script>
 
 </body>
 </html>
-
