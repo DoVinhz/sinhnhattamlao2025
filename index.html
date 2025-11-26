@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Happy Birthday</title>
+<style>
+    body {
+        margin: 0;
+        background: black;
+        overflow: hidden;
+        font-family: Arial, sans-serif;
+        color: white;
+        text-align: center;
+    }
+
+    #countdown {
+        font-size: 120px;
+        font-weight: bold;
+        position: absolute;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: none;
+    }
+
+    #birthday-message {
+        display: none;
+        position: absolute;
+        top: 15%;
+        width: 100%;
+        font-size: 60px;
+        text-shadow: 0 0 20px #ff6, 0 0 40px #f0f;
+    }
+
+    #birthday-message small {
+        font-size: 35px;
+        display: block;
+        margin-top: 10px;
+    }
+
+    #cake {
+        width: 350px;
+        display: none;
+        position: absolute;
+        bottom: 10%;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    #avatar {
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        border: 6px solid white;
+        display: none;
+        position: absolute;
+        top: 30%;
+        left: 50%;
+        transform: translateX(-50%);
+        object-fit: cover;
+    }
+
+    /* Bóng bay */
+    .balloon {
+        position: absolute;
+        width: 40px;
+        height: 55px;
+        border-radius: 60%;
+        opacity: 0.8;
+        animation: floatUp 6s linear infinite;
+    }
+
+    @keyframes floatUp {
+        from { transform: translateY(100vh); }
+        to   { transform: translateY(-120vh); }
+    }
+</style>
+</head>
+<body>
+
+<!-- Nhạc nền -->
+<audio id="music" loop>
+    <!-- Chèn file nhạc của bạn -->
+    <!-- <source src="music.mp3" type="audio/mp3"> -->
+</audio>
+
+<div id="countdown">3</div>
+
+<img id="avatar" src="" alt="Avatar">
+<img id="cake" src="https://i.imgur.com/9N4I9Yy.png" alt="Birthday Cake">
+
+<div id="birthday-message">
+    Happy Birthday TÂM 🎉  
+    <small>Lạo</small>
+    <small style="font-size:28px; margin-top:15px;">From V. Vinh with love ❤️</small>
+</div>
+
+<canvas id="fireworks"></canvas>
+
+<script>
+// ==================== Đếm ngược 3-2-1
+let countdown = document.getElementById("countdown");
+let count = 3;
+countdown.style.display = "block";
+
+let timer = setInterval(() => {
+    countdown.innerHTML = count;
+    count--;
+
+    if (count < 0) {
+        clearInterval(timer);
+        countdown.style.display = "none";
+        startShow();
+    }
+}, 1000);
+
+// ==================== Bắt đầu trình diễn
+function startShow() {
+    // Phát nhạc
+    document.getElementById("music").play().catch(()=>{});
+    document.getElementById("birthday-message").style.display = "block";
+    document.getElementById("cake").style.display = "block";
+    document.getElementById("avatar").style.display = "block";
+
+    launchFireworks();
+    createBalloons();
+}
+
+// ==================== Pháo hoa
+const canvas = document.getElementById('fireworks');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+function random(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
+let particles = [];
+
+function launchFireworks() {
+    setInterval(() => {
+        let x = random(100, canvas.width - 100);
+        let y = random(50, canvas.height / 2);
+
+        for (let i = 0; i < 60; i++) {
+            particles.push({
+                x, y,
+                angle: random(0, Math.PI * 2),
+                speed: random(2, 6),
+                life: 100
+            });
+        }
+    }, 500);
+
+    animate();
+}
+
+function animate() {
+    ctx.fillStyle = "rgba(0,0,0,0.2)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    particles.forEach((p, i) => {
+        let vx = Math.cos(p.angle) * p.speed;
+        let vy = Math.sin(p.angle) * p.speed;
+
+        p.x += vx;
+        p.y += vy;
+        p.life--;
+
+        ctx.fillStyle = `hsl(${p.life * 3},100%,50%)`;
+        ctx.fillRect(p.x, p.y, 3, 3);
+
+        if (p.life <= 0) particles.splice(i, 1);
+    });
+
+    requestAnimationFrame(animate);
+}
+
+// ==================== Bóng bay
+function createBalloons() {
+    setInterval(() => {
+        let balloon = document.createElement("div");
+        balloon.className = "balloon";
+        balloon.style.left = Math.random() * 100 + "%";
+        balloon.style.background = `hsl(${Math.random()*360}, 80%, 60%)`;
+
+        document.body.appendChild(balloon);
+
+        setTimeout(() => balloon.remove(), 6500);
+    }, 500);
+}
+</script>
+
+</body>
+</html>
